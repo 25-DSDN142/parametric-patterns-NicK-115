@@ -1,6 +1,9 @@
 //your parameter variables go here!
-let rect_width  = 20;
-let rect_height = 30;
+let star_x  = 100;
+let star_y  = 100;
+
+let star_width  = 40;
+let star_height = 40;
 
 
 function setup_wallpaper(pWallpaper) {
@@ -20,6 +23,43 @@ function wallpaper_background() {
   background(240, 255, 240); //light honeydew green colour
 }
 
+function star_A(x,y, Color2R=0,Color2G=0,Color2B=0, spikeSizeX=40,spikeSizeY=40, centerThicknessX=10,centerThicknessY=10) {
+
+  //First Half
+
+  beginShape();
+  vertex(x-centerThicknessX,y+centerThicknessY); //Spike Left
+  vertex(x-spikeSizeX,y);
+
+  vertex(x-centerThicknessX,y-centerThicknessY); //Spike Up
+  vertex(x,y-spikeSizeY);
+
+  vertex(x+centerThicknessX,y-centerThicknessY);
+  endShape(CLOSE);
+
+
+  //Second Half
+  fill(Color2R,Color2G,Color2B);
+  beginShape();
+  vertex(x+centerThicknessX,y-centerThicknessY); //Spike Right
+  vertex(x+spikeSizeX,y);
+
+  vertex(x+centerThicknessX,y+centerThicknessY); //Spike Down
+  vertex(x,y+spikeSizeY);
+
+  vertex(x-centerThicknessX,y+centerThicknessY);
+  endShape(CLOSE);
+
+}
+
+/*function star_B() {
+  ellipse(100,100, 20,80);
+}*/
+
 function my_symbol() { // do not rename this function. Treat this similarly to a Draw function
-  rect(40 ,40, rect_width, rect_height);
+  noStroke();
+  fill(255,85,0);
+  star_A(star_x,star_y, star_width/2,star_height/2, star_width/8,star_height/8);
+  //star_B();
+
 }
