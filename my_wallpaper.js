@@ -2,8 +2,8 @@
 let star_x  = 100;
 let star_y  = 100;
 
-let star_width  = 40;
-let star_height = 40;
+let star_width  = 80;
+let star_height = 80;
 
 
 function setup_wallpaper(pWallpaper) {
@@ -59,7 +59,7 @@ function star_A(x,y, Color2R=0,Color2G=0,Color2B=0, spikeSizeX=40,spikeSizeY=40,
 function my_symbol() { // do not rename this function. Treat this similarly to a Draw function
   noStroke();
   fill(255,85,0);
-  star_A(star_x,star_y, star_width/2,star_height/2, star_width/8,star_height/8);
+  star_A(star_x,star_y, 0,0,0, star_width/2,star_height/2, star_width/8,star_height/8);
   //star_B();
 
 }
