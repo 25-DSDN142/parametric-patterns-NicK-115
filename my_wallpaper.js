@@ -6,15 +6,16 @@ let star_offsetY = 50;
 let star_width  = 100;
 let star_height = 100;
 
-let gradCircleSize = 60;
+let gradCircleSize = 40;
 
-let gradCircleRepeats = 999;
-let gradCircleColorRange = 5;
+let gradCircleRepeats = 750;
+let gradCircleColorRange = 10;
+let gradCircleSeedNumber = 0; //Will be set to noise-generated if value is 0.
 
 let gradCircleRandomPoints = true;
-let gradCircleRandomCount = 10; //Will only function if gradCircleRandomPoints is true.
+let gradCircleRandomCount = 1; //Will only function if gradCircleRandomPoints is true.
 
-let gradCircleRandom_RandomBaseHue = true; //Will only function if gradCircleRandomPoints is true.
+let gradCircleRandom_RandomBaseHue = false; //Will only function if gradCircleRandomPoints is true.
 let gradCircleRandom_DesiredBaseHue = 15; //Will only function if gradCircleRandom_RandomBaseHue is false.
 
 let gradCircleXPoints = []; //Leave empty if gradCircleRandomPoints is true.
@@ -30,7 +31,7 @@ function setup_wallpaper(pWallpaper) {
   pWallpaper.output_mode(GRID_WALLPAPER);
   
   pWallpaper.resolution(FIT_TO_SCREEN);
-  pWallpaper.show_guide(true); //set this to false when you're ready to print
+  pWallpaper.show_guide(false); //set this to false when you're ready to print
 
   //Grid settings
   pWallpaper.grid_settings.cell_width  = 200;
@@ -39,7 +40,12 @@ function setup_wallpaper(pWallpaper) {
 }
 
 function wallpaper_background() {
-  background(128); //mid grey colour
+  background(0); //black colour
+
+  if (gradCircleSeedNumber != 0) {
+  noiseSeed(gradCircleSeedNumber); //Checks if the noise seed parameter is given; if so, set the seed to this value.
+  }
+
 }
 
 function star(x,y, inverted=0, spikeSizeX=40,spikeSizeY=40, centerThicknessX=10,centerThicknessY=10) {
@@ -96,21 +102,25 @@ let generatedCircleX;
 let generatedCircleY;
 let generatedCircleHue;
 
-
 function create_CircleStartPoints(){
   colorMode(HSB);
   if (gradCircleRandomPoints === true) {
     for (let i = 0; i < gradCircleRandomCount; i++) {
-      circleRandX = noise(0.05 * i) * 200;
-      circleRandY = noise(0.05 * i) * 200;
+      circleRandX = gradCircleSize/2 + noise(0.05 * i) * (200-gradCircleSize);
+      circleRandY = gradCircleSize/2 + noise(0.05 * i) * (200-gradCircleSize);
+      
       circleRandHue = noise(0)*360;
 
       gradCircleXPoints[i] = circleRandX;
       gradCircleYPoints[i] = circleRandY;
+
       if (gradCircleRandom_RandomBaseHue === true) {
         gradCircleHuePoints[i] = circleRandHue;
         baseCircleHue = circleRandHue;
         fill(circleRandHue,100,100);
+        if (i < 1) {
+          console.log(baseCircleHue);
+        }
       } else {
         gradCircleHuePoints[i] = gradCircleRandom_DesiredBaseHue;
         baseCircleHue = gradCircleRandom_DesiredBaseHue;
@@ -118,6 +128,7 @@ function create_CircleStartPoints(){
       }
 
       circle(circleRandX,circleRandY, gradCircleSize); 
+
     }
   } else {
     for (let i = 0; i < gradCircleXPoints.length; i++) {
@@ -139,14 +150,21 @@ function sprout_CircleGradient() {
       generatedCircleHue = gradCircleHuePoints[i];
     
       //Noise Offsetting Time!
-      generatedCircleX = generatedCircleX + (noise(0.001 * j + (i*5))-0.5) * 1;
-      generatedCircleY = generatedCircleY + (noise(0.001 * j + (i*5) + 99999)-0.5) * 1;
-      generatedCircleHue = generatedCircleHue + (noise(0.05 * j + (i*5) + 999)-0.5) * 2;
+      generatedCircleX = generatedCircleX + (noise(0.001 * j + (i*5))-0.5) * (2);
+      generatedCircleY = generatedCircleY + (noise(0.001 * j + (i*5) + 99999)-0.5) * (2);
+      generatedCircleHue = baseCircleHue + (noise(0.001 * j + (i*5) + 999)-0.5) * (2 * gradCircleColorRange);
 
-      if (generatedCircleHue > baseCircleHue+gradCircleColorRange) {
-        generatedCircleHue = baseCircleHue+gradCircleColorRange;
-      } else if (generatedCircleHue < baseCircleHue-gradCircleColorRange) {
-        generatedCircleHue = baseCircleHue-gradCircleColorRange;
+
+      if (generatedCircleX > 200-gradCircleSize/2) {
+        generatedCircleX = gradCircleSize/2;
+      } else if (generatedCircleX < gradCircleSize/2) {
+        generatedCircleX = 200-gradCircleSize/2;
+      }
+
+      if (generatedCircleY > 200-gradCircleSize/2) {
+        generatedCircleY = gradCircleSize/2;
+      } else if (generatedCircleY < gradCircleSize/2) {
+        generatedCircleY = 200-gradCircleSize/2;
       }
 
       fill(generatedCircleHue,100,100);
