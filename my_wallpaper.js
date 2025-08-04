@@ -1,36 +1,31 @@
 //your parameter variables go here!
+//StarGrid
+let starPairCount_H = 2; //WARNING: This will multiply the given value by 2.
+let starPairCount_V = 2; //WARNING: This will multiply the given value by 2.
 
-let star_offsetX = 50;
-let star_offsetY = 50;
+//GradientCircles
+let gradCircleSize = 30;
 
-let star_width  = 100;
-let star_height = 100;
-
-let gradCircleSize = 40;
-
-let gradCircleRepeats = 750;
-let gradCircleColorRange = 10;
-let gradCircleSeedNumber = 0; //Will be set to noise-generated if value is 0.
+let gradCircleRepeats = 250;
+let gradCircleColorRange = 15;
+let gradCircleSeedNumber = 7654; //Will be set to noise-generated if value is 0.
 
 let gradCircleRandomPoints = true;
-let gradCircleRandomCount = 1; //Will only function if gradCircleRandomPoints is true.
+let gradCircleRandomCount = 50; //Will only function if gradCircleRandomPoints is true.
 
 let gradCircleRandom_RandomBaseHue = false; //Will only function if gradCircleRandomPoints is true.
-let gradCircleRandom_DesiredBaseHue = 15; //Will only function if gradCircleRandom_RandomBaseHue is false.
+let gradCircleRandom_DesiredBaseHue = 210; //Will only function if gradCircleRandom_RandomBaseHue is false.
 
 let gradCircleXPoints = []; //Leave empty if gradCircleRandomPoints is true.
 let gradCircleYPoints = []; //Leave empty if gradCircleRandomPoints is true.
 let gradCircleHuePoints = []; //Leave empty if gradCircleRandomPoints is true.
 
 
-
-
-
 function setup_wallpaper(pWallpaper) {
-  pWallpaper.output_mode(DEVELOP_GLYPH);
+  //pWallpaper.output_mode(DEVELOP_GLYPH);
   pWallpaper.output_mode(GRID_WALLPAPER);
   
-  pWallpaper.resolution(FIT_TO_SCREEN);
+  pWallpaper.resolution(NINE_LANDSCAPE);
   pWallpaper.show_guide(false); //set this to false when you're ready to print
 
   //Grid settings
@@ -46,6 +41,27 @@ function wallpaper_background() {
   noiseSeed(gradCircleSeedNumber); //Checks if the noise seed parameter is given; if so, set the seed to this value.
   }
 
+}
+
+//StarGrid Formation
+let star_width;
+let star_height;
+let star_x;
+let star_y;
+let star_invert = -1;
+
+function starGrid(horiCount, vertiCount) {
+    star_width = (200/(horiCount*2));
+    star_height = (200/(vertiCount*2));
+    for (let i = 0; i < vertiCount*2; i++) {
+      for (let j = 0; j < horiCount*2; j++) {
+        star_invert++;   
+        star_x = (star_width/2)+(200/(horiCount*2))*j;
+        star_y = (star_height/2)+(200/(vertiCount*2))*i;
+        star(star_x,star_y, (star_invert % 2), star_width/2,star_height/2, star_width/8,star_height/8);
+      }
+    star_invert++;   
+  }
 }
 
 function star(x,y, inverted=0, spikeSizeX=40,spikeSizeY=40, centerThicknessX=10,centerThicknessY=10) {
@@ -87,11 +103,7 @@ function star(x,y, inverted=0, spikeSizeX=40,spikeSizeY=40, centerThicknessX=10,
 }
 
 
-
-let star_x = 0;
-let star_y = 0;
-let inv = 0;
-
+//GradientCircle Formation
 let baseCircleHue;
 
 let circleRandX;
@@ -109,10 +121,10 @@ function create_CircleStartPoints(){
       circleRandX = gradCircleSize/2 + noise(0.05 * i) * (200-gradCircleSize);
       circleRandY = gradCircleSize/2 + noise(0.05 * i) * (200-gradCircleSize);
       
-      circleRandHue = noise(0)*360;
-
       gradCircleXPoints[i] = circleRandX;
       gradCircleYPoints[i] = circleRandY;
+
+      circleRandHue = noise(0)*360;
 
       if (gradCircleRandom_RandomBaseHue === true) {
         gradCircleHuePoints[i] = circleRandHue;
@@ -155,6 +167,7 @@ function sprout_CircleGradient() {
       generatedCircleHue = baseCircleHue + (noise(0.001 * j + (i*5) + 999)-0.5) * (2 * gradCircleColorRange);
 
 
+      //Out of Bounds Check
       if (generatedCircleX > 200-gradCircleSize/2) {
         generatedCircleX = gradCircleSize/2;
       } else if (generatedCircleX < gradCircleSize/2) {
@@ -167,6 +180,7 @@ function sprout_CircleGradient() {
         generatedCircleY = 200-gradCircleSize/2;
       }
 
+      //Creates a circle at the new locationwith the new hue.
       fill(generatedCircleHue,100,100);
       circle(generatedCircleX,generatedCircleY, gradCircleSize); 
 
@@ -182,11 +196,8 @@ function sprout_CircleGradient() {
 function my_symbol() { // do not rename this function. Treat this similarly to a Draw function
   noStroke();
 
-  create_CircleStartPoints();
-  sprout_CircleGradient();
+  create_CircleStartPoints(); //Places the Circle Points.
+  sprout_CircleGradient(); //Starts the GradientCircle generation.
 
-  star(50,50, 0, star_width/2,star_height/2, star_width/8,star_height/8);
-  star(150,50, 1, star_width/2,star_height/2, star_width/8,star_height/8);
-  star(50,150, 1, star_width/2,star_height/2, star_width/8,star_height/8);
-  star(150,150, 0, star_width/2,star_height/2, star_width/8,star_height/8);
+  starGrid(starPairCount_H, starPairCount_V); //Begins the StarGrid formation.
 }
